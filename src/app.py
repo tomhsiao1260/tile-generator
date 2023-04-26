@@ -50,7 +50,7 @@ def build_tile(name):
 
     data = {}
     data['refine'] = "REPLACE"
-    data['geometricError'] = 0.2 * math.pow(1.41421, -level)
+    data['geometricError'] = 0.2 * math.pow(1.19, -level)
     data['content'] = { "uri": f"{name}.b3dm" }
 
     size = 10.0 * math.pow(2, -level)
@@ -78,11 +78,30 @@ class TexturedTileBuilder():
         bt = BatchTable()
         bt.add_property_from_array("color", value)
 
-        glTF = GlTF.from_binary_arrays(arrays, transform, textureUri='squaretexture.jpg')
+        glTF = GlTF.from_binary_arrays(arrays, transform)
+        # glTF = GlTF.from_binary_arrays(arrays, transform, textureUri='squaretexture.jpg')
         t = B3dm.from_glTF(glTF, bt)
 
         t.to_array()
         t.save_as(f"../output/{name}.b3dm")
+
+    def tile_build(arrays, data, name, depth):
+        if (depth > 0):
+            for x in range(2):
+                for y in range(2):
+                    for z in range(2):
+                        t = 4 * x + 2 * y + 1 * z
+                        f = int(math.pow(2, depth - 1))
+                        data_slice = data[f*x:f*(x+1), f*y:f*(y+1), f*z:f*(z+1)]
+
+                        TexturedTileBuilder.b3dm_build(f'{name}{t}', arrays, np.mean(data_slice))
+                        TexturedTileBuilder.tile_build(arrays, data_slice, f'{name}{t}', depth - 1)
+
+    def json_build(entry, name, depth):
+        if (depth > 0):
+            for i in range(8):
+                entry['children'].append(build_tile(f'{name}{i}'))
+                TexturedTileBuilder.json_build(entry['children'][i], f'{name}{i}', depth - 1)
 
     def test_build(self):
         ts = TriangleSoup()
@@ -99,12 +118,14 @@ class TexturedTileBuilder():
             'bbox': box
         }]
 
-        data = np.zeros((2, 2, 2))
+        depth = 3
+        size = int(math.pow(2, depth))
+        data = np.zeros((size, size, size))
 
-        for i in range(data.shape[0]):
-            for j in range(data.shape[1]):
-                for k in range(data.shape[2]):
-                    data[i][j][k] = (i + j + k) / 3
+        for i in range(size):
+            for j in range(size):
+                for k in range(size):
+                    data[i][j][k] = (i + j + k) / (3 * size)
 
         tileset = {}
         tileset['asset'] = { 'version': "0.0" }
@@ -114,46 +135,15 @@ class TexturedTileBuilder():
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0,
         ]
+        tileset['root'] = build_tile('0')
 
-        depth = int(math.log(data.shape[0], 2)) + 1
-        depth = 4
-    
-        for i in range(depth):
-            if (i == 0):
-                tileset['root'] = build_tile('0')
-            if (i == 1):
-                for j in range(8):
-                    tileset['root']['children'].append(build_tile(f'0{j}'))
-            if (i == 2):
-                for j in range(8):
-                    for k in range(8):
-                        tileset['root']['children'][j]['children'].append(build_tile(f'0{j}{k}'))
-            if (i == 3):
-                for j in range(8):
-                    for k in range(8):
-                        for l in range(8):
-                            tileset['root']['children'][j]['children'][k]['children'].append(build_tile(f'0{j}{k}{l}'))
-
+        TexturedTileBuilder.json_build(tileset['root'], '0', depth)
         json_data = json.dumps(tileset, indent=4, ensure_ascii=False)
-
         with open('../output/tileset.json', 'w') as f:
             f.write(json_data)
 
-        for i in range(depth):
-            if ((depth-i) == 1):
-                TexturedTileBuilder.b3dm_build('0', arrays, 0.5)
-            if ((depth-i) == 2):
-                for j in range(8):
-                    TexturedTileBuilder.b3dm_build(f'0{j}', arrays, j / 7)
-            if ((depth-i) == 3):
-                for j in range(8):
-                    for k in range(8):
-                        TexturedTileBuilder.b3dm_build(f'0{j}{k}', arrays, k / 7)
-            if ((depth-i) == 4):
-                for j in range(8):
-                    for k in range(8):
-                        for l in range(8):
-                            TexturedTileBuilder.b3dm_build(f'0{j}{k}{l}', arrays, l / 7)
+        TexturedTileBuilder.b3dm_build('0', arrays, np.mean(data))
+        TexturedTileBuilder.tile_build(arrays, data, '0', depth)
 
 if __name__ == '__main__':
     builder = TexturedTileBuilder()
