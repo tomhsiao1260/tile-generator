@@ -1,67 +1,69 @@
 import numpy as np
 
-class TriangleSoup:
+class Cube:
     def __init__(self):
+        self.boxArray = [[-1, -1, -1], [1, 1, 1]]
+
         self.verticeArray = [
             [
-                np.array([-5., -5., -5.], dtype=np.float32),
-                np.array([-5., 5., -5.], dtype=np.float32),
-                np.array([5., -5., -5.], dtype=np.float32),
+                np.array([-1., -1., -1.], dtype=np.float32),
+                np.array([-1., 1., -1.], dtype=np.float32),
+                np.array([1., -1., -1.], dtype=np.float32),
             ],
             [
-                np.array([5., 5., -5.], dtype=np.float32),
-                np.array([5., -5., -5.], dtype=np.float32),
-                np.array([-5., 5., -5.], dtype=np.float32),
+                np.array([1., 1., -1.], dtype=np.float32),
+                np.array([1., -1., -1.], dtype=np.float32),
+                np.array([-1., 1., -1.], dtype=np.float32),
             ],
             [
-                np.array([-5., -5., -5.], dtype=np.float32),
-                np.array([-5., -5., 5.], dtype=np.float32),
-                np.array([-5., 5., -5.], dtype=np.float32),
+                np.array([-1., -1., -1.], dtype=np.float32),
+                np.array([-1., -1., 1.], dtype=np.float32),
+                np.array([-1., 1., -1.], dtype=np.float32),
             ],
             [
-                np.array([-5., 5., 5.], dtype=np.float32),
-                np.array([-5., 5., -5.], dtype=np.float32),
-                np.array([-5., -5., 5.], dtype=np.float32),
+                np.array([-1., 1., 1.], dtype=np.float32),
+                np.array([-1., 1., -1.], dtype=np.float32),
+                np.array([-1., -1., 1.], dtype=np.float32),
             ],
             [
-                np.array([-5., 5., -5.], dtype=np.float32),
-                np.array([-5., 5., 5.], dtype=np.float32),
-                np.array([5., 5., -5.], dtype=np.float32),
+                np.array([-1., 1., -1.], dtype=np.float32),
+                np.array([-1., 1., 1.], dtype=np.float32),
+                np.array([1., 1., -1.], dtype=np.float32),
             ],
             [
-                np.array([5., 5., -5.], dtype=np.float32),
-                np.array([-5., 5., 5.], dtype=np.float32),
-                np.array([5., 5., 5.], dtype=np.float32),
+                np.array([1., 1., -1.], dtype=np.float32),
+                np.array([-1., 1., 1.], dtype=np.float32),
+                np.array([1., 1., 1.], dtype=np.float32),
             ], #
             [
-                np.array([5., 5., 5.], dtype=np.float32),
-                np.array([-5., 5., 5.], dtype=np.float32),
-                np.array([5., -5., 5.], dtype=np.float32),
+                np.array([1., 1., 1.], dtype=np.float32),
+                np.array([-1., 1., 1.], dtype=np.float32),
+                np.array([1., -1., 1.], dtype=np.float32),
             ],
             [
-                np.array([-5., -5., 5.], dtype=np.float32),
-                np.array([5., -5., 5.], dtype=np.float32),
-                np.array([-5., 5., 5.], dtype=np.float32),
+                np.array([-1., -1., 1.], dtype=np.float32),
+                np.array([1., -1., 1.], dtype=np.float32),
+                np.array([-1., 1., 1.], dtype=np.float32),
             ],
             [
-                np.array([5., 5., 5.], dtype=np.float32),
-                np.array([5., -5., 5.], dtype=np.float32),
-                np.array([5., 5., -5.], dtype=np.float32),
+                np.array([1., 1., 1.], dtype=np.float32),
+                np.array([1., -1., 1.], dtype=np.float32),
+                np.array([1., 1., -1.], dtype=np.float32),
             ],
             [
-                np.array([5., -5., -5.], dtype=np.float32),
-                np.array([5., 5., -5.], dtype=np.float32),
-                np.array([5., -5., 5.], dtype=np.float32),
+                np.array([1., -1., -1.], dtype=np.float32),
+                np.array([1., 1., -1.], dtype=np.float32),
+                np.array([1., -1., 1.], dtype=np.float32),
             ],
             [
-                np.array([5., -5., 5.], dtype=np.float32),
-                np.array([-5., -5., 5.], dtype=np.float32),
-                np.array([5., -5., -5.], dtype=np.float32),
+                np.array([1., -1., 1.], dtype=np.float32),
+                np.array([-1., -1., 1.], dtype=np.float32),
+                np.array([1., -1., -1.], dtype=np.float32),
             ],
             [
-                np.array([-5., -5., 5.], dtype=np.float32),
-                np.array([-5., -5., -5.], dtype=np.float32),
-                np.array([5., -5., -5.], dtype=np.float32),
+                np.array([-1., -1., 1.], dtype=np.float32),
+                np.array([-1., -1., -1.], dtype=np.float32),
+                np.array([1., -1., -1.], dtype=np.float32),
             ],
         ]
 
@@ -128,13 +130,16 @@ class TriangleSoup:
             ],
         ]
 
+    def getBoxArray(self):
+        return self.boxArray
+
     def getPositionArray(self):
         verticeTriangles = self.verticeArray
         verticeArray = vertexAttributeToArray(verticeTriangles)
 
         return b''.join(verticeArray)
 
-    def getDataArray(self):
+    def getUVArray(self):
         verticeTriangles = self.uvArray
         verticeArray = vertexAttributeToArray(verticeTriangles)
         return b''.join(verticeArray)
