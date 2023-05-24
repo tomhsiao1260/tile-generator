@@ -18,5 +18,5 @@ pip install -r requirements.txt
 ## Run App
 
 ```
-bash run_app.sh
+cd src && python app.py
 ```
